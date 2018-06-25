@@ -27,6 +27,10 @@ public class Request {
 	public RequestType getType() {
 		return type;
 	}
+	
+	public String getTypeAsString() {
+		return type.getType();
+	}
 
 	public List<Field> getFields() {
 		return fields;
@@ -42,7 +46,7 @@ public class Request {
 	public List<String> getFieldAttributes(String fieldName) {
 		
 		for (Field field : fields) {
-			if (field.getName().equals(fieldName)) {
+			if (field.getName().contains(fieldName)) {
 				return field.getAttributes();
 			}
 		}

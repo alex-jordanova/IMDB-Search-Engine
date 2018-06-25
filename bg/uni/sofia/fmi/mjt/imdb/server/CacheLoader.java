@@ -55,7 +55,7 @@ public class CacheLoader {
 		}
 		
 		fileName = request.getMovieTitle() + extension;
-		return Paths.get(CacheLoader.MAIN_DIRECTORY, request.getType().getType(), fileName);
+		return Paths.get(CacheLoader.MAIN_DIRECTORY, request.getTypeAsString(), fileName);
 	}
 
 	private static void createDirectory(String directoryName) {
