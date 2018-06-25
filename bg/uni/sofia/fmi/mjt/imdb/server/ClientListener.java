@@ -14,6 +14,7 @@ public class ClientListener extends Thread {
       
       public ClientListener(Socket clientSocket, Cache serverCache) {
     	  this.clientSocket = clientSocket;
+    	  this.serverCache = serverCache;
       }
       
     @Override
@@ -21,20 +22,21 @@ public class ClientListener extends Thread {
   		try (BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
   			Request receivedRequest = new Request(socketReader.readLine());
   			Fetcher fetcher = FetcherFactory.get(receivedRequest, serverCache);
-  			sendResponseToClient(fetcher.fetch());
-  			
+  			sendResponseToClient(fetcher.fetch());	
   		} catch (IOException e) {
   			System.out.println("Can't read from " + clientSocket.getInetAddress() + ".");
   		}
   	}
     
-    private void sendResponseToClient(byte[] response) {
+    private void sendResponseToClient(byte[] response) throws IOException {
     	try (OutputStream socketWriter = clientSocket.getOutputStream()) {
 			socketWriter.write(response);
 			socketWriter.flush();
 			System.out.println("Response successfully sent to " + clientSocket.getInetAddress() + ".");
 		} catch (IOException e) {
 			System.out.println("Cannot send response to " + clientSocket.getInetAddress() + ".");
-		} 
+		} finally {
+			clientSocket.close();
+		}
     }
 }

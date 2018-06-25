@@ -8,22 +8,21 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import bg.uni.sofia.fmi.mjt.imdb.corecomponents.Request;
-import bg.uni.sofia.fmi.mjt.imdb.exceptions.NoSuchMovieException;
 
 public class Client {
 	private static final int PORT_NUM = 9999;
 	private static final String HOST_NAME = "localhost";
 
-	public static void main(String[] args) throws IOException, InterruptedException, NoSuchFieldException, NoSuchMovieException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		try (BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-			Socket socket = new Socket(HOST_NAME, PORT_NUM);) {
+			Socket socket = new Socket(HOST_NAME, PORT_NUM);
+			PrintWriter sender = new PrintWriter(socket.getOutputStream())) {
 			
-			String input = console.readLine();
+			String request = console.readLine();
+			sendRequestToServer(sender, request, socket);
 			
-			sendRequestToServer(input, socket);
-			
-			Response response = receiveResponse(input, socket);
+			Response response = receiveResponse(request, socket);
 			response.process();
 
 		} catch (UnknownHostException e) {
@@ -33,14 +32,9 @@ public class Client {
 		}
 	}
 	
-	private static void sendRequestToServer(String request, Socket socket) {
-		try (PrintWriter sender = new PrintWriter(socket.getOutputStream())) {
-			sender.println(request);
-			sender.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private static void sendRequestToServer(PrintWriter sender, String request, Socket socket) {
+	      sender.println(request);
+		  sender.flush();
 	}
 	
 	private static Response receiveResponse(String input, Socket socket) throws IOException {

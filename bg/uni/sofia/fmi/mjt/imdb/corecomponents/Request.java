@@ -11,13 +11,13 @@ public class Request {
 	private RequestType type;
 	private List<Field> fields;
 	private static final Set<String> options = new HashSet<>(
-			Arrays.asList("actors", "order", "genre", "fields", "season"));
+			Arrays.asList("--fields", "--season"));
 
 	public Request(String request) {
-		String[] words = request.split("[^a-zA-Z0-9:']+");
-		movieTitle = extractMovieTitle(words);
-		type = extractType(words);
-	    fields = extractFields(words);
+		String[] words = request.split("[^a-zA-Z0-9:'-]+");
+		movieTitle = Parser.getMovieTitle(words, options);
+		type = Parser.getRequestType(words);
+	    fields = Parser.getFields(words, options);
 	}
 
 	public String getMovieTitle() {
@@ -32,18 +32,27 @@ public class Request {
 		return fields;
 	}
 
-	public List<String> getFieldAttributes(String fieldName) throws NoSuchFieldException {
+	public boolean hasField(String fieldName) {
+		for (Field field : fields) {
+			if (field.getName().contains(fieldName)) return true;
+		}
+		return false;
+	}
+	
+	public List<String> getFieldAttributes(String fieldName) {
+		
 		for (Field field : fields) {
 			if (field.getName().equals(fieldName)) {
 				return field.getAttributes();
 			}
 		}
 		
-		throw new NoSuchFieldException("There is no " + fieldName + " field!");
+		return new ArrayList<>();
+		
 	}
 	
 	public String getSeasonNumber() {
-		return fields.get(0).getAttributes().get(0);
+		return fields.get(0).getAttribute(0);
 	}
 	
 	public boolean hasSpecifiedFields() {
@@ -54,44 +63,6 @@ public class Request {
 		return this.type.equals(type);
 	}
 	
-	//helper functions
-	private String extractMovieTitle(String[] words) {
-		StringBuilder title = new StringBuilder();
-		
-		int index = 1;
-		while (index < words.length && !options.contains(words[index])) {
-			title.append(words[index++]).append(" ");
-		}
-		
-		return title.toString().trim();
-	}
-
-	private RequestType extractType(String[] words) {
-		  return RequestType.determineType(words[0]);
-	}
-
-	private List<Field> extractFields(String[] words) {
-		List<Field> fields = new ArrayList<>();
-		
-		int index = findFirstAttribute(words);
-		while (index != words.length) {
-			if (options.contains(words[index])) {
-				fields.add(new Field(words[index++]));
-			} else {
-				fields.get(fields.size() - 1).addAttribute(words[index++]);
-			}
-		}
-		
-		return fields;
-	}
-	
-	private int findFirstAttribute(String[] words) {
-		int index = 0;
-		while (index < words.length && !options.contains(words[index])) {
-			++index;
-		}
-	    return index;
-	}
 
 	@Override
 	public int hashCode() {

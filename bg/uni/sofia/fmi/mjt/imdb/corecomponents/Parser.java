@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import bg.uni.sofia.fmi.mjt.imdb.server.CacheLoader;
 
 public class Parser {
 	public static final String TITLE_FIELD = "title";
 	public static final String ORDER_FIELD = "order";
+	public static final String GENRE_FIELD = "genre";
+	public static final String ACTORS_FIELD = "actors";
 	public static final String RATING_FIELD = "imdbrating";
 	public static final String DESC_ORDER = "desc";
 	public static final String IMAGE_EXTENSION = ".jpg";
@@ -20,17 +25,7 @@ public class Parser {
 		int fieldStartIndex = input.toLowerCase().indexOf(field) - 1;
 		return input.substring(fieldStartIndex, input.indexOf(DELIMITER, fieldStartIndex) + 1);
 	}	
-	
-	public static double getRating(String ratingField) {
-		StringBuilder rating = new StringBuilder();
-		for (int i = 0; i < ratingField.length(); ++i) {
-			if (isDigit(ratingField.charAt(i)) || ratingField.charAt(i) == '.') {
-				rating.append(ratingField.charAt(i));
-			}
-		}
-		return Double.parseDouble(ratingField.toString());
-	}
-	
+
 	public static String getPosterURL(Path searchedMoviePath) {
 		String posterURL = "";
 		
@@ -52,14 +47,44 @@ public class Parser {
 		return requestedMovie.getMovieTitle() + requestedMovie.getSeasonNumber();
 	}
 	
-	private static boolean isDigit(char c) {
-		return '0' <= c && c <= '9';
+	
+	public static String getMovieTitle(String[] words, Set<String> options) {
+		StringBuilder title = new StringBuilder();
+		
+		int index = 1;
+		while (index < words.length && !options.contains(words[index])) {
+			title.append(words[index++]).append(" ");
+		}
+		
+		return title.toString().trim();
+	}
+
+	public static RequestType getRequestType(String[] words) {
+		  return RequestType.determineType(words[0]);
+	}
+
+	public static List<Field> getFields(String[] words, Set<String> options) {
+		List<Field> fields = new ArrayList<>();
+	
+		int firstFieldIndex = findFirstField(words, options);
+		while (firstFieldIndex != words.length) {
+			if (options.contains(words[firstFieldIndex])) {
+				fields.add(new Field(words[firstFieldIndex++]));
+			} else {
+				fields.get(fields.size() - 1).addAttribute(words[firstFieldIndex++]);
+			}
+		}
+		
+		return fields;
 	}
 	
-	
-	
-/*	private static boolean containsField(String input, String fieldName) {
-		return input.toLowerCase().contains(fieldName);
+
+	private static int findFirstField(String[] words, Set<String> options) {
+		int index = 0;
+		while (index < words.length && !options.contains(words[index])) {
+			++index;
+		}
+	    return index;
 	}
-	*/
+	
 }

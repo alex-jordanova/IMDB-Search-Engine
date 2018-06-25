@@ -42,6 +42,7 @@ public class CacheLoader {
 		} catch (IOException e1) {
 			System.out.println("Can't access file.");
 		}
+		
 		return movies;
 	}
 	

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package bg.uni.sofia.fmi.mjt.imdb.corecomponents;
 
 import java.util.ArrayList;
@@ -23,31 +22,16 @@ public class Field {
 	public List<String> getAttributes() {
 		return attributes;
 	}
-}
-=======
-package bg.uni.sofia.fmi.mjt.imdb.corecomponents;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class Field {
-	private String name;
-	private List<String> attributes = new ArrayList<>();
 	
-	public Field(String name) {
-		this.name = name;
+	public String getAttribute(int position) {
+		return attributes.get(position);
 	}
 	
-	public void addAttribute(String attribute) {
-		attributes.add(attribute.toLowerCase());
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public List<String> getAttributes() {
-		return attributes;
+	public boolean hasAttribute(String searchedAttribute) {
+		for (String attribute : attributes) {
+			if (attribute.equals(searchedAttribute)) return true;
+		}
+		
+		return false;
 	}
 }
->>>>>>> 3d073b38f6e2da80cf7ee58169d9aae5b7b9ef48

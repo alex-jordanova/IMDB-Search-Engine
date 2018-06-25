@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import bg.uni.sofia.fmi.mjt.imdb.corecomponents.Request;
-import bg.uni.sofia.fmi.mjt.imdb.exceptions.NoSuchMovieException;
 
 public class MovieResponse implements Response {
 
@@ -20,24 +19,21 @@ public class MovieResponse implements Response {
 	}
 	
 	@Override
-	public void process() throws NoSuchMovieException, NoSuchFieldException {
-		try (BufferedReader input = new BufferedReader(new InputStreamReader(response))) {
-			String movieData = input.readLine();
-			
-		/*	if (!isFoundMovie(movieData)) {
-				throw new NoSuchMovieException("The specified movie wasn't found!");
-			}
-			*/
-			
+	public void process() throws IOException {
+		try (BufferedReader responseReader = new BufferedReader(new InputStreamReader(response))) {
+			String movieData = responseReader.readLine();
+
 			if (request.hasSpecifiedFields()) {
-				OutputFormatter.printTitle(movieData);
-				OutputFormatter.printFieldResults(movieData, request.getFieldAttributes(FIELDS_OPTION));
+				ResponsePrinter.printTitle(movieData);
+				ResponsePrinter.printFieldResults(movieData, request.getFieldAttributes(FIELDS_OPTION));
 			} else {
 				System.out.println(movieData);
 			}
 			
 		} catch (IOException e) {
-			System.out.println("Problem reading input stream.");
+			System.out.println("Problem reading response from input stream!");
+		} finally {
+			response.close();
 		}
 	}
 

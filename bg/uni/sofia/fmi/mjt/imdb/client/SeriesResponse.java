@@ -14,8 +14,8 @@ public class SeriesResponse implements Response {
 	
 	@Override
 	public void process() {
-		try (BufferedReader input = new BufferedReader(new InputStreamReader(response))) {
-			OutputFormatter.printEpisodes(input.readLine());
+		try (BufferedReader responseReader = new BufferedReader(new InputStreamReader(response))) {
+			ResponsePrinter.printEpisodes(responseReader.readLine());
 		} catch (IOException e) {
 			System.out.println("Problem reading input stream!");
 		}

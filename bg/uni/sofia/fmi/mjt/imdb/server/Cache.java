@@ -1,11 +1,9 @@
 package bg.uni.sofia.fmi.mjt.imdb.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Map;
 
 import bg.uni.sofia.fmi.mjt.imdb.corecomponents.Parser;
@@ -48,18 +46,6 @@ public class Cache {
 		return Files.readAllBytes(seasonPath);
 	}
 	
-	public synchronized byte[] fetchAllMovies(Fetcher fetcher) throws IOException {
-		Collection<Path> movieEntries = movieDatabase.values();
-		ByteArrayOutputStream allMovies = new ByteArrayOutputStream();
-		
-		for (Path entry : movieEntries) {
-			allMovies.write(Files.readAllBytes(entry));
-		}
-
-		return allMovies.toByteArray();
-	}
-
-	
 	
 	private synchronized void saveMovieToCache(Fetcher fetcher) throws MalformedURLException {
 		Path destFile = CacheLoader.createDestinationPath(fetcher.getRequest(), CacheLoader.TXT_EXTENSION);
@@ -69,9 +55,11 @@ public class Cache {
 
 	private synchronized void saveSeasonToCache(Fetcher fetcher, String season) throws MalformedURLException {
 		Path destFile = CacheLoader.createDestinationPath(fetcher.getRequest(), CacheLoader.TXT_EXTENSION);
+		
 		String seasonNumber = fetcher.getRequest().getSeasonNumber(); 		
 		OmdbConnector.downloadSeriesSeason(fetcher.getRequestedMovie(),
 				seasonNumber, destFile.toString());
+		
 		seasonsDatabase.put(Parser.getSeasonName(fetcher.getRequest()), destFile);
 	}
 

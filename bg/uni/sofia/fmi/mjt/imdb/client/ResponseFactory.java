@@ -7,16 +7,12 @@ import bg.uni.sofia.fmi.mjt.imdb.corecomponents.RequestType;
 
 public class ResponseFactory {
 	public static Response get(Request request, InputStream response) {
-		if (request.getType().equals(RequestType.POSTER)) {
+		if (request.isType(RequestType.POSTER)) {
 			return new PosterResponse(request, response);
-		} 
-		if (request.getType().equals(RequestType.TVSERIES)) {
+		} else if (request.isType(RequestType.TVSERIES)) {
 			return new SeriesResponse(response);
-		}
-		if (request.getType().equals(RequestType.MOVIE)) {
-			return new MovieResponse(request, response);
 		} else {
-			return new MoviesResponse(request, response);	
-		}
+			return new MovieResponse(request, response);
+		} 
 	}
 }

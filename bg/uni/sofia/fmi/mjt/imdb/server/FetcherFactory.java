@@ -9,10 +9,8 @@ public class FetcherFactory {
 			return new PosterFetcher(request, cache);
 		} else if (request.isType(RequestType.MOVIE)) {
 			return new MovieFetcher(request, cache);
-		} else if (request.isType(RequestType.TVSERIES)) {
-			return new SeriesFetcher(request, cache);
 		} else {
-			return new MoviesFetcher(request, cache);	
+			return new SeriesFetcher(request, cache);
 		}
 	}
 	
